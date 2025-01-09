@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Espejo con Filtros Divertidos</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+      }
+
+      .container {
+        width: 80%;
+        max-width: 1200px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .title {
+        grid-column: span 2;
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .box {
+        background-color: #222;
+        border: 2px solid #555;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      .box img {
+        max-width: 100%;
+        border-radius: 10px;
+      }
+
+      .box-content {
+        text-align: left;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="sketch.js"></script>
+    <div class="container">
+      <div class="title">Espejo con Filtros Divertidos</div>
+      <div class="box box-content">
+        <h2>Descripción</h2>
+        <p>
+          La cámara muestra la cara del usuario en tiempo real y se aplican
+          filtros graciosos como ojos gigantes, orejas de gato, o máscaras,
+          detectando puntos clave del rostro.
+        </p>
+        <h3>Interacción</h3>
+        <p>El usuario puede cambiar los filtros con botones o gestos.</p>
+      </div>
+      <div class="box">
+        <img
+          src="https://fotografias.lasexta.com/clipping/cmsimages01/2016/04/08/5A1C3528-B82F-4F77-B880-3E825C47BB43/98.jpg?crop=800,450,x0,y0&width=1900&height=1069&optimize=high&format=webply"
+        />
+      </div>
+    </div>
+  </body>
+</html>
