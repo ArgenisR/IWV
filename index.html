@@ -2,11 +2,95 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Espejo con Filtros Divertidos</title>
+    <title>Proyecto Final</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+    <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* Elimina las barras de desplazamiento */
+      }
+
+      /* Estilo de los botones */
+      button {
+        background-color: #ffcccb;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 10px;
+      }
+
+      button:hover {
+        background-color: #ff9999;
+      }
+
+      /* Alinear los botones horizontalmente en la parte inferior */
+      #button-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        z-index: 10; /* Asegura que los botones estén encima del video */
+      }
+
+      /* Estilo de la descripción */
+      #description {
+        position: fixed;
+        top: 20px; /* Ajustar la posición para que no se superponga con la cámara */
+        right: 20px;
+        color: white;
+        font-size: 18px;
+        max-width: 300px;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 5; /* Asegura que el texto esté por encima del fondo pero debajo de los botones */
+      }
+
+      /* Título */
+      #title {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 30px;
+        color: white;
+        z-index: 10; /* Asegura que el título esté por encima de todos los demás elementos */
+      }
+    </style>
   </head>
   <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+    <!-- Título en la parte superior -->
+    <div id="title">Proyecto Final</div>
+
+    <!-- Contenedor de los botones -->
+    <div id="button-container">
+      <button id="mask1">Mascara 1</button>
+      <button id="mask2">Mascara 2</button>
+      <button id="mask3">Mascara 3</button>
+      <button id="noMask">Sin Máscara</button>
+      <!-- Botón para quitar la máscara -->
+    </div>
+
+    <!-- Descripción en la parte derecha -->
+    <div id="description">
+      <p>
+        Selecciona una máscara para aplicarla a tu rostro en tiempo real. Si no
+        deseas ninguna máscara, presiona "Sin Máscara".
+      </p>
+    </div>
+
     <script src="sketch.js"></script>
   </body>
 </html>
