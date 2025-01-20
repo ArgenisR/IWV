@@ -1,95 +1,106 @@
-let stars = []; // Arreglo para las estrellas
-let capture;
+let video;
+let faceMesh;
+let faces = [];
+let triangles;
+let uvCoords;
+let textures = [];
+let currentTextureIndex = 0;
+let particles = []; // Para el fondo dinámico
+
+function preload() {
+  faceMesh = ml5.faceMesh({ maxFaces: 1 });
+  textures.push(loadImage("mask1.png"));
+  textures.push(loadImage("mask2.png"));
+  textures.push(loadImage("mask3.png"));
+}
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+  video.hide();
+  faceMesh.detectStart(video, gotFaces);
+  triangles = faceMesh.getTriangles();
+  uvCoords = faceMesh.getUVCoords();
 
-  // Crear estrellas aleatorias
-  for (let i = 0; i < 200; i++) {
-    stars.push({
-      x: random(width),
-      y: random(height),
-      size: random(2, 5),
-      speed: random(0.5, 1),
-      brightness: random(100, 255),
+  // Generar partículas para el fondo
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: random(-width / 2, width / 2),
+      y: random(-height / 2, height / 2),
+      size: random(2, 6),
+      speedX: random(-1, 1),
+      speedY: random(-1, 1),
     });
   }
 
-  // Configurar la cámara
-  capture = createCapture(VIDEO);
-  capture.size(640, 480);
-  capture.hide();
-
-  textFont("Press Start 2P"); // Fuente estilo retro
+  // Agregar los event listeners para los botones
+  document
+    .getElementById("mask1")
+    .addEventListener("click", () => changeTexture(0));
+  document
+    .getElementById("mask2")
+    .addEventListener("click", () => changeTexture(1));
+  document
+    .getElementById("mask3")
+    .addEventListener("click", () => changeTexture(2));
+  document.getElementById("noMask").addEventListener("click", removeMask); // Botón para quitar la máscara
 }
 
 function draw() {
-  // Dibujar fondo de estrellas
-  background(20, 30, 60);
-  drawStars();
+  // Fondo dinámico que ocupa toda la pantalla
+  background(30, 30, 60);
+  noStroke();
+  for (let p of particles) {
+    fill(100, 150, 200, 150);
+    circle(p.x, p.y, p.size);
+    p.x += p.speedX;
+    p.y += p.speedY;
+    if (p.x < -width / 2 || p.x > width / 2) p.speedX *= -1;
+    if (p.y < -height / 2 || p.y > height / 2) p.speedY *= -1;
+  }
 
-  // Dibujar título
-  textAlign(CENTER);
-  fill(0, 255, 136);
-  textSize(32);
-  text("✨ Espejo Indie con Filtros Divertidos ✨", width / 2, 80);
+  // Video centrado
+  push();
+  translate(-width / 2 + (width - 640) / 2, -height / 2 + (height - 480) / 2); // Centra la cámara
+  image(video, 0, 0, 640, 480);
+  pop();
 
-  // Dibujar el recuadro de la cámara
-  drawNeonBox(width / 2 - 330, height / 2 - 250, 660, 500, color(0, 255, 136));
-  image(capture, width / 2 - 320, height / 2 - 240, 640, 480);
-
-  // Dibujar el cuadro de información
-  drawInfoBox();
-}
-
-// Función para dibujar estrellas
-function drawStars() {
-  for (let star of stars) {
+  // Renderizado de máscara
+  if (faces.length > 0 && currentTextureIndex !== -1) {
+    let face = faces[0];
+    push();
+    translate(-width / 2 + (width - 640) / 2, -height / 2 + (height - 480) / 2); // Centra la máscara en la cámara
+    texture(textures[currentTextureIndex]);
+    textureMode(NORMAL);
     noStroke();
-    fill(star.brightness, star.brightness, star.brightness, 200);
-    ellipse(star.x, star.y, star.size);
-
-    // Actualizar brillo para el efecto de parpadeo
-    star.brightness += star.speed;
-    if (star.brightness > 255 || star.brightness < 100) {
-      star.speed *= -1;
+    beginShape(TRIANGLES);
+    for (let i = 0; i < triangles.length; i++) {
+      let tri = triangles[i];
+      let [a, b, c] = tri;
+      let pointA = face.keypoints[a];
+      let pointB = face.keypoints[b];
+      let pointC = face.keypoints[c];
+      let uvA = uvCoords[a];
+      let uvB = uvCoords[b];
+      let uvC = uvCoords[c];
+      vertex(pointA.x, pointA.y, uvA[0], uvA[1]);
+      vertex(pointB.x, pointB.y, uvB[0], uvB[1]);
+      vertex(pointC.x, pointC.y, uvC[0], uvC[1]);
     }
+    endShape();
+    pop();
   }
 }
 
-// Función para dibujar un recuadro estilo neón
-function drawNeonBox(x, y, w, h, neonColor) {
-  stroke(neonColor);
-  strokeWeight(6);
-  noFill();
-  rect(x, y, w, h);
-  noStroke();
-  fill(neonColor);
-  ellipse(x, y, 10, 10);
-  ellipse(x + w, y, 10, 10);
-  ellipse(x, y + h, 10, 10);
-  ellipse(x + w, y + h, 10, 10);
+function gotFaces(results) {
+  faces = results;
 }
 
-// Función para el cuadro de información
-function drawInfoBox() {
-  let boxX = width / 2 - 320;
-  let boxY = height / 2 + 270;
-  let boxW = 640;
-  let boxH = 150;
+function changeTexture(index) {
+  currentTextureIndex = index;
+}
 
-  fill(40, 40, 60, 200);
-  noStroke();
-  rect(boxX, boxY, boxW, boxH, 10);
-
-  fill(255);
-  textAlign(LEFT);
-  textSize(14);
-  text(
-    "Descripción: Una experiencia interactiva donde puedes aplicar filtros divertidos\n" +
-      "como ojos gigantes, orejas de gato, y más.\n" +
-      "Interacción: Cambia los filtros con botones o gestos en tiempo real.",
-    boxX + 20,
-    boxY + 30
-  );
+function removeMask() {
+  currentTextureIndex = -1; // Esto elimina la máscara
 }
